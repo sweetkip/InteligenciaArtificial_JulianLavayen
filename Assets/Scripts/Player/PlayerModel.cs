@@ -61,7 +61,6 @@ public class PlayerModel : MonoBehaviour
             anim.SetFloat("Speed", animSpeed, 0.1f, Time.deltaTime);
             anim.SetBool("isCrouching", isCrouching);
             anim.SetBool("isGrounded", IsGrounded());
-            //Debug.Log("¿Suelo?: " + IsGrounded());
         }
     }
 
@@ -88,7 +87,7 @@ public class PlayerModel : MonoBehaviour
 
     public bool IsGrounded()
     {
-        return Physics.CheckSphere(groundCheck.position, 0.2f, groundLayer);
+        return Physics.CheckSphere(groundCheck.position, 0.5f, groundLayer);
     }
     
     private void HandleCollider(bool isCrouching)
