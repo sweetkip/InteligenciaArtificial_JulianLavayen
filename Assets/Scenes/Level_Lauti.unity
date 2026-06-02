@@ -11155,6 +11155,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Zone01_Statues
       objectReference: {fileID: 0}
+    - target: {fileID: -6333485498072951827, guid: ceb9df55b5046d84eada7000d113249f, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 33150b109b9a2f641896d68927d4790f, type: 2}
     - target: {fileID: -6151688812392996543, guid: ceb9df55b5046d84eada7000d113249f, type: 3}
       propertyPath: m_Name
       value: Zone01_Bridge
