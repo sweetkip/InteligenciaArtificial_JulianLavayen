@@ -23,6 +23,7 @@ public class PlayerController : MonoBehaviour
 
     private void Awake()
     {
+
         float vidaNormalizada = health / 3f;
         HealthBar.SetFloat("_Vida_anterior", vidaNormalizada);
         HealthBar.SetFloat("_Vida", vidaNormalizada);
