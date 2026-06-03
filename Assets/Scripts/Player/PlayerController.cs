@@ -1,6 +1,6 @@
 using UnityEngine.SceneManagement;
 using UnityEngine;
-
+using System.Collections;
 public class PlayerController : MonoBehaviour
 {
     [Header("Settiings")]
@@ -8,7 +8,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Transform cameraPivot;
     private float cameraPitch = 0f;
     private float cameraYaw = 0f;
-
+    public Material HealthBar;
     private PlayerModel model;
 
     [Header("Stats")]
@@ -23,6 +23,10 @@ public class PlayerController : MonoBehaviour
 
     private void Awake()
     {
+        float vidaNormalizada = health / 3f;
+        HealthBar.SetFloat("_Vida_anterior", vidaNormalizada);
+        HealthBar.SetFloat("_Vida", vidaNormalizada);
+        HealthBar.SetFloat("_tiempoHit", Time.time);
         model = GetComponent<PlayerModel>();
         Cursor.lockState = CursorLockMode.Locked;
         cameraYaw = transform.eulerAngles.y;
@@ -32,6 +36,7 @@ public class PlayerController : MonoBehaviour
     {
         Look();
         Movement();
+
 
         if (Input.GetMouseButtonDown(0))
         {
@@ -92,15 +97,22 @@ public class PlayerController : MonoBehaviour
 
     public void TakeDamage()
     {
+        float vidaAntesNormalizada = health / 3f;
+
         health--;
         Debug.Log("Remaining Life: " + health);
-
+        float vidaNormalizada = health / 3f;
+        HealthBar.SetFloat("_Vida_anterior", vidaAntesNormalizada);
+        HealthBar.SetFloat("_Vida", vidaNormalizada);
+        HealthBar.SetFloat("_tiempoHit", Time.time);
         if (health <= 0)
-            RestartLevel();
+            StartCoroutine(RestartLevelDelay());
     }
 
-    private void RestartLevel()
+    private IEnumerator RestartLevelDelay()
     {
+        yield return new WaitForSeconds(1f);
+
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 }
