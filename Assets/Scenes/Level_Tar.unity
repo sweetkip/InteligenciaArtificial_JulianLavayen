@@ -13054,7 +13054,7 @@ Transform:
   m_GameObject: {fileID: 889407893}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 162.7, y: 6.3, z: -490.4}
+  m_LocalPosition: {x: 150.9, y: 6.3, z: -490.4}
   m_LocalScale: {x: 15.377149, y: 12.928493, z: 12.928493}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -21666,8 +21666,8 @@ Transform:
   m_GameObject: {fileID: 1643015336}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 163.4656, y: 17.2, z: -487.6}
-  m_LocalScale: {x: 13.795431, y: 13.795431, z: 13.795431}
+  m_LocalPosition: {x: 153.9, y: 17.2, z: -487.6}
+  m_LocalScale: {x: 14.690693, y: 11.746947, z: 11.746947}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -26210,7 +26210,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mouseSensitivity: 2
   cameraPivot: {fileID: 48776521}
+  HealthBar: {fileID: 0}
   health: 3
+  maxHealth: 3
   ballPrefab: {fileID: 6503757951183800837, guid: 35121bb699aa6ee4db47342d14dd5266, type: 3}
   throwPoint: {fileID: 21438599}
   throwForce: 70
@@ -26241,6 +26243,10 @@ MonoBehaviour:
   crouchHeight: 2
   normalCenter: {x: -0.02382469, y: 1.279615, z: 0.02359295}
   crouchCenter: {x: -0.02382469, y: 1.076876, z: 0.02359295}
+  globalVolume: {fileID: 0}
+  vignetteDefault: 0.5
+  vignetteCrouch: 0.5
+  vignetteSpeed: 5
   visualPivot: {fileID: 309055181}
 --- !u!54 &1938624631
 Rigidbody:
