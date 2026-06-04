@@ -96,7 +96,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   captureChance: 0.5
-  captureVFX: {fileID: 0}
+  captureVFX: {fileID: 2009803282657295519, guid: 5b078a9f2c5cb2042b9aec516e099eae, type: 3}
 --- !u!1001 &3336948456137241435
 PrefabInstance:
   m_ObjectHideFlags: 0

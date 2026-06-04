@@ -21,8 +21,28 @@ public class PokeBall : MonoBehaviour
         {
             Debug.Log("Gotcha!");
             pkmn.OnCaptured();
+
             if (captureVFX)
-                Instantiate(captureVFX, pkmn.transform.position, Quaternion.identity);
+            {
+                for (int i = 0; i < 5; i++)
+                {
+                    Vector3 offset = new Vector3(
+                        Random.Range(-15f, 15f),
+                        Random.Range(-5f, 5f),
+                        Random.Range(-15f, 15f)
+                    );
+
+                    GameObject star = Instantiate(
+                        captureVFX,
+                        pkmn.transform.position + Vector3.up * 25f + offset,
+                        Quaternion.Euler(0, 0, Random.Range(0f, 360f))
+                    );
+
+                    star.transform.localScale *= Random.Range(0.5f, 1.2f);
+
+                    Destroy(star, 2f);
+                }
+            }
         }
         else
         {
