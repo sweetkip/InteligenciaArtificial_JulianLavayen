@@ -53,6 +53,15 @@ public class SceneController : MonoBehaviour
             UnlockCursor();
         }
     }
+    
+    public void OnPokemonCaught()
+    {
+        caughtPokemon++;
+        Debug.Log($"Pokémon atrapados: {caughtPokemon} / {totalPokemon}");
+
+        if (caughtPokemon >= totalPokemon)
+            TriggerVictory();
+    }
 
     private void UnlockCursor()
     {

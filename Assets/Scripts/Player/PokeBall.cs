@@ -43,6 +43,11 @@ public class PokeBall : MonoBehaviour
                     Destroy(star, 2f);
                 }
             }
+            
+            if (SceneController.instance != null)
+            {
+                SceneController.instance.OnPokemonCaught();
+            }    
         }
         else
         {

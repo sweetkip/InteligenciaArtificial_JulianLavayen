@@ -107,15 +107,11 @@ public class PlayerController : MonoBehaviour
         HealthBar.SetFloat("_Vida_anterior", vidaAntesNormalizada);
         HealthBar.SetFloat("_Vida", vidaNormalizada);
         HealthBar.SetFloat("_tiempoHit", Time.time);
-        if (health <= 0)
-            StartCoroutine(RestartLevelDelay());
-    }
 
-    private IEnumerator RestartLevelDelay()
-    {
-        yield return new WaitForSeconds(1f);
-
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        if (health <= 0 && SceneController.instance != null)
+        {
+            SceneController.instance.TriggerDefeat();
+        }
     }
 
     public void HealPlayer()
