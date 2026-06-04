@@ -509,23 +509,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Izurieta Juan Cruz - Integrante
-
-    Lavayen Julian - Integrante
-
-    Angel
-    Rodrigez Tomas- Integrante
-
-    Puig Da Silva Lautaro - Integrante
-
-
-    Modelos:
-
-    Mudkip,
-    Wimpod, Wishiwashi, Tinkaton, Map & Pokeball: Pokemon quest de Nintendo
-
-    Entrenador:
-    Smas Bros de Nintendo '
+  m_text: "Graphics Programmers:\nIzurieta Juan Cruz\nLavay\xE9n Juli\xE1n \nRodriguez
+    Tomas Angel\nPuig Da Silva Lautaro\n\nLevel design:\nLavay\xE9n Juli\xE1n\n\nModels
+    from \"POK\xE9MON QUEST\" (The Pok\xE9mon Company)"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -559,8 +545,8 @@ MonoBehaviour:
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 3
-  m_HorizontalAlignment: 1
-  m_VerticalAlignment: 256
+  m_HorizontalAlignment: 2
+  m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
   m_wordSpacing: 0
