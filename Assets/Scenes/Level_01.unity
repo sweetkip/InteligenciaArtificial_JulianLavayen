@@ -27526,6 +27526,10 @@ MonoBehaviour:
   crouchHeight: 2
   normalCenter: {x: -0.02382469, y: 1.279615, z: 0.02359295}
   crouchCenter: {x: -0.02382469, y: 1.076876, z: 0.02359295}
+  globalVolume: {fileID: 208534690}
+  vignetteDefault: 0.1
+  vignetteCrouch: 0.5
+  vignetteSpeed: 5
   visualPivot: {fileID: 309055181}
 --- !u!54 &1938624631
 Rigidbody:

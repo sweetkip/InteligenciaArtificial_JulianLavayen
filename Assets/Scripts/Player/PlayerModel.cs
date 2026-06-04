@@ -1,4 +1,6 @@
 using UnityEngine;
+using UnityEngine.Rendering;
+using UnityEngine.Rendering.Universal;
 
 public class PlayerModel : MonoBehaviour
 {
@@ -24,16 +26,38 @@ public class PlayerModel : MonoBehaviour
     [SerializeField] private Vector3 normalCenter = new Vector3 (0f, 1f, 0f);
     [SerializeField] private Vector3 crouchCenter = new Vector3(0f, 0.5f, 0f);
 
+    [Header("Vignette Settings")]
+    [SerializeField] private Volume globalVolume;
+    [SerializeField] private float vignetteDefault = 0.5f;
+    [SerializeField] private float vignetteCrouch = 0.5f;
+    [SerializeField] private float vignetteSpeed = 5f;
+
+    private Vignette vignette;
+    private bool insideObstacle = false;
+    private bool isCrouchingState = false;
+
     [SerializeField] private Transform visualPivot;
 
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
         anim = GetComponentInChildren<Animator>();
+
+        if (globalVolume != null && globalVolume.profile.TryGet<Vignette>(out var tempVignette))
+        {
+            vignette = tempVignette;
+            vignetteDefault = vignette.intensity.value;
+        }
+    }
+
+    private void Update()
+    {
+        VignetteStealth();
     }
 
     public void Walk(Vector3 dir, bool isRunning, bool isCrouching)
     {
+        isCrouchingState = isCrouching;
         HandleCollider(isCrouching);
 
         float currentSpeed = walkSpeed;
@@ -50,8 +74,6 @@ public class PlayerModel : MonoBehaviour
         vel.y = rb.linearVelocity.y;
         rb.linearVelocity = vel;
 
-        //Anim
-        //0 = Idle, 1 = Walk, 2 = Run
         if (anim != null)
         {
             float animSpeed = dir.magnitude;
@@ -99,6 +121,31 @@ public class PlayerModel : MonoBehaviour
         {
             playerCollider.height = targetHeight;
             playerCollider.center = targetCenter;
+        }
+    }
+
+    private void VignetteStealth()
+    {
+        if (vignette == null) return;
+
+        float targetIntensity = (isCrouchingState && insideObstacle) ? vignetteCrouch : vignetteDefault;
+
+        vignette.intensity.value = Mathf.Lerp(vignette.intensity.value, targetIntensity, Time.deltaTime * vignetteSpeed);
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.layer == LayerMask.NameToLayer("Obstacle"))
+        {
+            insideObstacle = true;
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.gameObject.layer == LayerMask.NameToLayer("Obstacle"))
+        {
+            insideObstacle = false;
         }
     }
 }
