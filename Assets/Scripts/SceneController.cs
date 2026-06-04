@@ -68,4 +68,9 @@ public class SceneController : MonoBehaviour
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
     }
+
+    public void ExitGame()
+    {
+        Application.Quit();
+    }
 }

@@ -20,6 +20,12 @@
         },
         {
             "m_Id": "b1e8aaad34d946b1b3fbb3582bbadbdf"
+        },
+        {
+            "m_Id": "b2d9af3748cd43528a591a6e742345cd"
+        },
+        {
+            "m_Id": "3a8a744388ed4332a3ecf41841eebada"
         }
     ],
     "m_Keywords": [],
@@ -193,6 +199,20 @@
     "m_GroupDatas": [],
     "m_StickyNoteDatas": [],
     "m_Edges": [
+        {
+            "m_OutputSlot": {
+                "m_Node": {
+                    "m_Id": "06f80104263942dd8565597efee296ba"
+                },
+                "m_SlotId": 3
+            },
+            "m_InputSlot": {
+                "m_Node": {
+                    "m_Id": "1427e755f3f7459abe2d036b43d66a5a"
+                },
+                "m_SlotId": 0
+            }
+        },
         {
             "m_OutputSlot": {
                 "m_Node": {
@@ -2084,6 +2104,34 @@
     "m_Value": 0.0,
     "m_DefaultValue": 0.0,
     "m_Labels": []
+}
+
+{
+    "m_SGVersion": 1,
+    "m_Type": "UnityEditor.ShaderGraph.Internal.Vector1ShaderProperty",
+    "m_ObjectId": "3a8a744388ed4332a3ecf41841eebada",
+    "m_Guid": {
+        "m_GuidSerialized": "a1948e07-2c77-4e69-9d6e-75eeab420d23"
+    },
+    "m_Name": "Foam",
+    "m_DefaultRefNameVersion": 1,
+    "m_RefNameGeneratedByDisplayName": "Foam",
+    "m_DefaultReferenceName": "_Foam",
+    "m_OverrideReferenceName": "",
+    "m_GeneratePropertyBlock": true,
+    "m_UseCustomSlotLabel": false,
+    "m_CustomSlotLabel": "",
+    "m_DismissedVersion": 0,
+    "m_Precision": 0,
+    "overrideHLSLDeclaration": false,
+    "hlslDeclarationOverride": 0,
+    "m_Hidden": false,
+    "m_Value": 0.0,
+    "m_FloatType": 0,
+    "m_RangeValues": {
+        "x": 0.0,
+        "y": 1.0
+    }
 }
 
 {
@@ -4042,6 +4090,34 @@
 }
 
 {
+    "m_SGVersion": 1,
+    "m_Type": "UnityEditor.ShaderGraph.Internal.Vector1ShaderProperty",
+    "m_ObjectId": "b2d9af3748cd43528a591a6e742345cd",
+    "m_Guid": {
+        "m_GuidSerialized": "3c5740db-703a-406f-940a-3a9ca641278d"
+    },
+    "m_Name": "Depth",
+    "m_DefaultRefNameVersion": 1,
+    "m_RefNameGeneratedByDisplayName": "Depth",
+    "m_DefaultReferenceName": "_Depth",
+    "m_OverrideReferenceName": "",
+    "m_GeneratePropertyBlock": true,
+    "m_UseCustomSlotLabel": false,
+    "m_CustomSlotLabel": "",
+    "m_DismissedVersion": 0,
+    "m_Precision": 0,
+    "overrideHLSLDeclaration": false,
+    "hlslDeclarationOverride": 0,
+    "m_Hidden": false,
+    "m_Value": 0.0,
+    "m_FloatType": 0,
+    "m_RangeValues": {
+        "x": 0.0,
+        "y": 1.0
+    }
+}
+
+{
     "m_SGVersion": 0,
     "m_Type": "UnityEditor.ShaderGraph.Vector1MaterialSlot",
     "m_ObjectId": "b2dff83252d646f8b27ed9f55bbb1e70",
@@ -5040,10 +5116,10 @@
         "m_Expanded": true,
         "m_Position": {
             "serializedVersion": "2",
-            "x": -795.2001953125,
-            "y": 1015.2000122070313,
+            "x": -1047.2000732421875,
+            "y": 1088.0,
             "width": 208.00006103515626,
-            "height": 301.60003662109377
+            "height": 301.5999755859375
         }
     },
     "m_Slots": [
@@ -5966,8 +6042,8 @@
         "m_Expanded": true,
         "m_Position": {
             "serializedVersion": "2",
-            "x": -143.56996154785157,
-            "y": 1427.6300048828125,
+            "x": -420.8000183105469,
+            "y": 1217.5999755859375,
             "width": 208.0,
             "height": 277.5999755859375
         }
@@ -6015,6 +6091,12 @@
         },
         {
             "m_Id": "b1e8aaad34d946b1b3fbb3582bbadbdf"
+        },
+        {
+            "m_Id": "b2d9af3748cd43528a591a6e742345cd"
+        },
+        {
+            "m_Id": "3a8a744388ed4332a3ecf41841eebada"
         }
     ]
 }
@@ -6065,10 +6147,10 @@
         "m_Expanded": true,
         "m_Position": {
             "serializedVersion": "2",
-            "x": -444.18267822265627,
-            "y": 1335.8172607421875,
-            "width": 208.0,
-            "height": 325.60009765625
+            "x": -666.39990234375,
+            "y": 1163.199951171875,
+            "width": 207.9998779296875,
+            "height": 325.5999755859375
         }
     },
     "m_Slots": [
