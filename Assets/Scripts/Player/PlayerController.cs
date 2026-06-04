@@ -13,6 +13,7 @@ public class PlayerController : MonoBehaviour
 
     [Header("Stats")]
     [SerializeField] private int health = 3;
+    [SerializeField] private int maxHealth = 3;
 
     [Header("PokéBall")]
     [SerializeField] private GameObject ballPrefab;
@@ -115,5 +116,20 @@ public class PlayerController : MonoBehaviour
         yield return new WaitForSeconds(1f);
 
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
+    public void HealPlayer()
+    {
+        if (health < maxHealth)
+        {
+            Debug.Log("Player curado");
+            float vidaAntesNormalizada = health / 3f;
+            health++;
+            Debug.Log("Remaining Life: " + health);
+            float vidaNormalizada = health / 3f;
+            HealthBar.SetFloat("_Vida_anterior", vidaAntesNormalizada);
+            HealthBar.SetFloat("_Vida", vidaNormalizada);
+            HealthBar.SetFloat("_tiempoHit", Time.time);
+        }
     }
 }
