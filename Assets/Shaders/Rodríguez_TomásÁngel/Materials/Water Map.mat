@@ -85,6 +85,7 @@ Material:
     - _AddPrecomputedVelocity: 0
     - _AlphaClip: 0
     - _AlphaToMask: 0
+    - _Amplitud: 0.005
     - _Blend: 0
     - _BlendModePreserveSpecular: 1
     - _BumpScale: 1
@@ -99,8 +100,11 @@ Material:
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
     - _DstBlendAlpha: 0
+    - _EdgeBlend: 0.5
+    - _EffectRadius: 1
     - _EnvironmentReflections: 1
     - _Foam: 0
+    - _Frequency: 0.5
     - _GlossMapScale: 0
     - _Glossiness: 0
     - _GlossyReflections: 0
@@ -110,6 +114,7 @@ Material:
     - _QueueControl: 0
     - _QueueOffset: 0
     - _ReceiveShadows: 1
+    - _RippleDensity: 10
     - _Scale: 200
     - _Smoothness: 0.5
     - _SmoothnessTextureChannel: 0
@@ -130,8 +135,9 @@ Material:
     - _ColorBorde: {r: 0.25031146, g: 0.31925967, b: 0.7075471, a: 0}
     - _ColorFondo: {r: 0.06839622, g: 0.24674496, b: 0.5, a: 0}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+    - _RippleOrigin: {r: 0, g: 0, b: 0, a: 0}
     - _ShoreMainColor: {r: 0.37263784, g: 0.8542547, b: 0.9924528, a: 1}
-    - _Shorefoamcolor: {r: 1, g: 1, b: 1, a: 1}
+    - _Shorefoamcolor: {r: 0.33490568, g: 0.5384964, b: 1, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
     - _WaterColor: {r: 0.21249548, g: 0.41726848, b: 0.8867924, a: 1}
   m_BuildTextureStacks: []
