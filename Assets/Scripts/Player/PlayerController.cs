@@ -25,10 +25,10 @@ public class PlayerController : MonoBehaviour
     private void Awake()
     {
 
-        float vidaNormalizada = health / 3f;
-        HealthBar.SetFloat("_Vida_anterior", vidaNormalizada);
-        HealthBar.SetFloat("_Vida", vidaNormalizada);
-        HealthBar.SetFloat("_tiempoHit", Time.time);
+        float normalizedHealth = health / 3f;
+        HealthBar.SetFloat("_PreviousHealth", normalizedHealth);
+        HealthBar.SetFloat("_Health", normalizedHealth);
+        HealthBar.SetFloat("_hitTime", Time.time);
         model = GetComponent<PlayerModel>();
         Cursor.lockState = CursorLockMode.Locked;
         cameraYaw = transform.eulerAngles.y;
@@ -99,14 +99,14 @@ public class PlayerController : MonoBehaviour
 
     public void TakeDamage()
     {
-        float vidaAntesNormalizada = health / 3f;
+        float previousNormalizedHealth = health / 3f;
 
         health--;
         Debug.Log("Remaining Life: " + health);
-        float vidaNormalizada = health / 3f;
-        HealthBar.SetFloat("_Vida_anterior", vidaAntesNormalizada);
-        HealthBar.SetFloat("_Vida", vidaNormalizada);
-        HealthBar.SetFloat("_tiempoHit", Time.time);
+        float normalizedHealth = health / 3f;
+        HealthBar.SetFloat("_PreviousHealth", previousNormalizedHealth);
+        HealthBar.SetFloat("_Health", normalizedHealth);
+        HealthBar.SetFloat("_hitTime", Time.time);
 
         if (health <= 0 && SceneController.instance != null)
         {
@@ -119,13 +119,13 @@ public class PlayerController : MonoBehaviour
         if (health < maxHealth)
         {
             Debug.Log("Player curado");
-            float vidaAntesNormalizada = health / 3f;
+            float previousNormalizedHealth = health / 3f;
             health++;
             Debug.Log("Remaining Life: " + health);
-            float vidaNormalizada = health / 3f;
-            HealthBar.SetFloat("_Vida_anterior", vidaAntesNormalizada);
-            HealthBar.SetFloat("_Vida", vidaNormalizada);
-            HealthBar.SetFloat("_tiempoHit", Time.time);
+            float normalizedHealth = health / 3f;
+            HealthBar.SetFloat("_PreviousHealth", previousNormalizedHealth);
+            HealthBar.SetFloat("_Health", normalizedHealth);
+            HealthBar.SetFloat("_hitTime", Time.time);
         }
     }
 }
