@@ -4,7 +4,7 @@ public class HealingPill : MonoBehaviour
 {
     [SerializeField] private float offset = 2;
     [SerializeField] private float speed = 1;
-    private PlayerController playerController;
+    private NewControls playerController;
     private Vector3 initialPosition;
     private bool goRight;
     void Start()
@@ -38,7 +38,7 @@ public class HealingPill : MonoBehaviour
     }
     private void OnTriggerEnter(Collider other)
     {
-        playerController = other.GetComponent<PlayerController>();
+        playerController = other.GetComponent<NewControls>();
         if (playerController != null )
         {
             playerController.HealPlayer();

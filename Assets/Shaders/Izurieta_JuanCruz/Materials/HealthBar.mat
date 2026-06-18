@@ -135,7 +135,7 @@ Material:
     - _WorkflowMode: 1
     - _XRMotionVectorsPass: 1
     - _ZWrite: 1
-    - _hitTime: 102.07854
+    - _hitTime: 0
     - _tiempoHit: 0
     - _vida: 1
     m_Colors:

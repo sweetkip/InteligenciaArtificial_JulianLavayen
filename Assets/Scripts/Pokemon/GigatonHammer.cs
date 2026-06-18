@@ -19,7 +19,7 @@ public class GigatonHammer : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            PlayerController player = other.GetComponent<PlayerController>();
+            NewControls player = other.GetComponent<NewControls>();
             if (player != null)
             {
                 player.TakeDamage();
