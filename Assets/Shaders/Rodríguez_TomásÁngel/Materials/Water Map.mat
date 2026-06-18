@@ -86,6 +86,7 @@ Material:
     - _AlphaClip: 0
     - _AlphaToMask: 0
     - _Amplitud: 0.005
+    - _Amplitude: 0.005
     - _Blend: 0
     - _BlendModePreserveSpecular: 1
     - _BumpScale: 1
@@ -104,6 +105,7 @@ Material:
     - _EffectRadius: 1
     - _EnvironmentReflections: 1
     - _Foam: 0
+    - _FoamSpeed: 0.002
     - _Frequency: 0.5
     - _GlossMapScale: 0
     - _Glossiness: 0
@@ -116,6 +118,7 @@ Material:
     - _ReceiveShadows: 1
     - _RippleDensity: 10
     - _Scale: 200
+    - _ShoreSpeed: 1.5
     - _Smoothness: 0.5
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
@@ -135,6 +138,7 @@ Material:
     - _ColorBorde: {r: 0.25031146, g: 0.31925967, b: 0.7075471, a: 0}
     - _ColorFondo: {r: 0.06839622, g: 0.24674496, b: 0.5, a: 0}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+    - _GlowingFoamColor: {r: 0, g: 1, b: 0.9376643, a: 1}
     - _RippleOrigin: {r: 0, g: 0, b: 0, a: 0}
     - _ShoreMainColor: {r: 0.37263784, g: 0.8542547, b: 0.9924528, a: 1}
     - _Shorefoamcolor: {r: 0.33490568, g: 0.5384964, b: 1, a: 1}

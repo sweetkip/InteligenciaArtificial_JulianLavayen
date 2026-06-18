@@ -24,7 +24,11 @@
     ],
     "m_Keywords": [],
     "m_Dropdowns": [],
-    "m_CategoryData": [],
+    "m_CategoryData": [
+        {
+            "m_Id": "37ff7e99bdde46ea8497ed088af82944"
+        }
+    ],
     "m_Nodes": [
         {
             "m_Id": "c27e7060c3e0467094d619c3303315ab"
@@ -1023,10 +1027,10 @@
         "m_Expanded": true,
         "m_Position": {
             "serializedVersion": "2",
-            "x": 202.50003051757813,
-            "y": -710.4998779296875,
-            "width": 0.0,
-            "height": 0.0
+            "x": 96.0000228881836,
+            "y": -812.0000610351563,
+            "width": 143.20001220703126,
+            "height": 33.60003662109375
         }
     },
     "m_Slots": [
@@ -1151,10 +1155,10 @@
         "m_Expanded": true,
         "m_Position": {
             "serializedVersion": "2",
-            "x": -499.00006103515627,
-            "y": 319.00006103515627,
-            "width": 0.0,
-            "height": 0.0
+            "x": -495.1999816894531,
+            "y": 280.8000183105469,
+            "width": 131.19998168945313,
+            "height": 33.60003662109375
         }
     },
     "m_Slots": [
@@ -1244,6 +1248,33 @@
         "e32": 0.0,
         "e33": 1.0
     }
+}
+
+{
+    "m_SGVersion": 0,
+    "m_Type": "UnityEditor.ShaderGraph.CategoryData",
+    "m_ObjectId": "37ff7e99bdde46ea8497ed088af82944",
+    "m_Name": "",
+    "m_ChildObjectList": [
+        {
+            "m_Id": "6e65d771a6374092b22e640d60d93dc2"
+        },
+        {
+            "m_Id": "87d439d8ec184b40a340dca201a048ea"
+        },
+        {
+            "m_Id": "d26a5e8e38a64e5394692d2f71434463"
+        },
+        {
+            "m_Id": "3aead06eac574583b705a61e268efe2c"
+        },
+        {
+            "m_Id": "b81b636d50594f44b52f63f5b6931acb"
+        },
+        {
+            "m_Id": "5b58cc59160c4b7782be042c59a76c6a"
+        }
+    ]
 }
 
 {
@@ -1751,10 +1782,10 @@
     "m_Guid": {
         "m_GuidSerialized": "d2a4c299-2d37-4db9-952d-131d5fd84700"
     },
-    "m_Name": "Amplitud",
+    "m_Name": "Amplitude",
     "m_DefaultRefNameVersion": 1,
-    "m_RefNameGeneratedByDisplayName": "Amplitud",
-    "m_DefaultReferenceName": "_Amplitud",
+    "m_RefNameGeneratedByDisplayName": "Amplitude",
+    "m_DefaultReferenceName": "_Amplitude",
     "m_OverrideReferenceName": "",
     "m_GeneratePropertyBlock": true,
     "m_UseCustomSlotLabel": false,
@@ -2223,10 +2254,10 @@
         "m_Expanded": true,
         "m_Position": {
             "serializedVersion": "2",
-            "x": 124.00003051757813,
-            "y": -593.9998779296875,
-            "width": 0.0,
-            "height": 0.0
+            "x": 76.79998779296875,
+            "y": -715.2000732421875,
+            "width": 132.00003051757813,
+            "height": 33.60003662109375
         }
     },
     "m_Slots": [
@@ -2389,10 +2420,10 @@
         "m_Expanded": true,
         "m_Position": {
             "serializedVersion": "2",
-            "x": -505.00006103515627,
-            "y": -51.999935150146487,
-            "width": 0.0,
-            "height": 0.0
+            "x": -536.7999877929688,
+            "y": -84.0,
+            "width": 148.79998779296876,
+            "height": 33.599998474121097
         }
     },
     "m_Slots": [
@@ -2899,7 +2930,7 @@
     "m_Type": "UnityEditor.ShaderGraph.Vector1MaterialSlot",
     "m_ObjectId": "b5d5996d8c6a40f6be98e2b8092e9be8",
     "m_Id": 0,
-    "m_DisplayName": "Amplitud",
+    "m_DisplayName": "Amplitude",
     "m_SlotType": 1,
     "m_Hidden": false,
     "m_ShaderOutputName": "Out",

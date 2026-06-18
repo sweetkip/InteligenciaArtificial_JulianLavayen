@@ -88,6 +88,20 @@
         {
             "m_OutputSlot": {
                 "m_Node": {
+                    "m_Id": "ad55b7fd1faf43b89531518524f54fe7"
+                },
+                "m_SlotId": 1
+            },
+            "m_InputSlot": {
+                "m_Node": {
+                    "m_Id": "2bc42928799e45b6a1ed6022a74ae7e5"
+                },
+                "m_SlotId": 1
+            }
+        },
+        {
+            "m_OutputSlot": {
+                "m_Node": {
                     "m_Id": "b26da02469834bbb9af97509d3545911"
                 },
                 "m_SlotId": 4
@@ -168,7 +182,7 @@
     "m_SlotType": 0,
     "m_Hidden": false,
     "m_ShaderOutputName": "OutVector4",
-    "m_StageCapability": 3,
+    "m_StageCapability": 2,
     "m_Value": {
         "x": 0.0,
         "y": 0.0,
