@@ -1365,8 +1365,8 @@
     "hlslDeclarationOverride": 0,
     "m_Hidden": false,
     "m_Value": {
-        "r": 0.0,
-        "g": 0.0,
+        "r": 1.0,
+        "g": 0.40782997012138369,
         "b": 0.0,
         "a": 1.0
     },
@@ -1885,7 +1885,7 @@
     "overrideHLSLDeclaration": false,
     "hlslDeclarationOverride": 0,
     "m_Hidden": false,
-    "m_Value": 0.0,
+    "m_Value": 0.5,
     "m_FloatType": 1,
     "m_RangeValues": {
         "x": -1.0,
@@ -1914,8 +1914,8 @@
     "hlslDeclarationOverride": 0,
     "m_Hidden": false,
     "m_Value": {
-        "r": 0.0,
-        "g": 0.0,
+        "r": 1.0,
+        "g": 0.796925961971283,
         "b": 0.0,
         "a": 1.0
     },
@@ -2211,8 +2211,8 @@
     "m_ObjectId": "73b18275098c4fedba6f3ceb4d7016c6",
     "m_Title": "Liquid Movement",
     "m_Position": {
-        "x": -2977.599853515625,
-        "y": 154.39999389648438
+        "x": -2977.000244140625,
+        "y": 155.00006103515626
     }
 }
 
@@ -2730,8 +2730,8 @@
     "hlslDeclarationOverride": 0,
     "m_Hidden": false,
     "m_Value": {
-        "r": 0.0,
-        "g": 0.0,
+        "r": 1.0,
+        "g": 0.7708207368850708,
         "b": 0.0,
         "a": 1.0
     },
@@ -2835,7 +2835,7 @@
     "overrideHLSLDeclaration": false,
     "hlslDeclarationOverride": 0,
     "m_Hidden": false,
-    "m_Value": 0.0,
+    "m_Value": 0.5,
     "m_FloatType": 1,
     "m_RangeValues": {
         "x": -1.0,
@@ -2863,7 +2863,7 @@
     "overrideHLSLDeclaration": false,
     "hlslDeclarationOverride": 0,
     "m_Hidden": false,
-    "m_Value": 0.0,
+    "m_Value": 1.0,
     "m_FloatType": 1,
     "m_RangeValues": {
         "x": -2.0,
@@ -3183,8 +3183,8 @@
     "m_ObjectId": "d80f0ce23b324de5be796125206f6ca2",
     "m_Title": "Color",
     "m_Position": {
-        "x": -1392.800048828125,
-        "y": -536.7999877929688
+        "x": -1392.0001220703125,
+        "y": -536.0000610351563
     }
 }
 
@@ -3223,7 +3223,7 @@
     "overrideHLSLDeclaration": false,
     "hlslDeclarationOverride": 0,
     "m_Hidden": false,
-    "m_Value": 0.0,
+    "m_Value": 1.0,
     "m_FloatType": 0,
     "m_RangeValues": {
         "x": 0.0,
@@ -3370,8 +3370,8 @@
     "m_ObjectId": "e52eba35bcc94b228d24454765ae278b",
     "m_Title": "Fill",
     "m_Position": {
-        "x": -1399.2000732421875,
-        "y": 490.4000244140625
+        "x": -1399.0,
+        "y": 491.0000915527344
     }
 }
 
