@@ -3,37 +3,18 @@ using UnityEngine;
 
 public class Node : MonoBehaviour
 {
-    public List<Node> neightbourds;//<- Esto es lo unico que importa
+    public List<Node> neighbours;
 
-    //Si utilizan este codigo con los raycast en el start/update/realtime son un punto menos por raycast.
-    public bool hasTrap;
-    Material mat;
-
-    private void Start()
+    private void OnDrawGizmos()
     {
-        mat = GetComponent<Renderer>().material;
-        GetNeightbourd(Vector3.right);
-        GetNeightbourd(Vector3.left);
-        GetNeightbourd(Vector3.forward);
-        GetNeightbourd(Vector3.back);
-    }
-
-    private void Update()
-    {
-        if (hasTrap)
-            mat.color = Color.red;
-        else
-            mat.color = Color.white;
-    }
-
-    void GetNeightbourd(Vector3 dir)
-    {
-        RaycastHit hit;
-        if (Physics.Raycast(transform.position, dir, out hit, 2.2f))
+        Gizmos.color = Color.green;
+        
+        foreach(var neighbour in neighbours)
         {
-            var node = hit.collider.GetComponent<Node>();
-            if (node != null)
-                neightbourds.Add(node);
+            if (neighbour != null)
+            {
+                Gizmos.DrawLine(transform.position, neighbour.transform.position);
+            }
         }
     }
 }

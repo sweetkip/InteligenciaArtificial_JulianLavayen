@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ThetaStar_profe : MonoBehaviour
+public class ThetaStar : MonoBehaviour
 {
     public static List<Node> Run(
         Node initialNode,
@@ -24,13 +24,9 @@ public class ThetaStar_profe : MonoBehaviour
 
         pending.Enqueue(initialNode, 0);
 
-        //int counter = 0;
 
         while (!pending.IsEmpty)
         {
-            //counter++;
-            //if (counter > watchDog) break;
-
             Node node = pending.Dequeue();
             if (visited.Contains(node))
             {
@@ -38,8 +34,6 @@ public class ThetaStar_profe : MonoBehaviour
             }
 
             visited.Add(node);
-
-            Debug.Log("ThetaStar");
 
             if (isSatisfied(node))
             {

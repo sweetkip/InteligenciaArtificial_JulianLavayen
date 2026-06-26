@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class PKMNController : MonoBehaviour
@@ -13,7 +14,11 @@ public class PKMNController : MonoBehaviour
         ToLake,
         Tower,
         Wander,
-        Captured
+        Captured,
+        Sandygast_Idle,
+        Sandygast_Moving,
+        Gimmighoul_SearchCoin,
+        Gimmighoul_MovingToCoin
     }
 
     public enum Personality
@@ -23,7 +28,9 @@ public class PKMNController : MonoBehaviour
         Coward,
         Panic,
         Neutral,
-        Tower
+        Tower,
+        Sandygast,
+        Gimmighoul
     }
 
     [Header("References")]
@@ -65,29 +72,52 @@ public class PKMNController : MonoBehaviour
     private float targetYaw;
     private bool isFleeing = false;
 
+    [Header("Sandygast")]
+    [SerializeField] private Transform sandygastBodyMesh;
+    [SerializeField] private float undergroundYOffset = -0.5f;
+    [SerializeField] private float sandygastNodeDistanceThreshold = 0.5f;
+    [SerializeField] private float surfaceWaitTime = 2f;
+    private float waitTimer = 0f;
+    private List<Node> circuitNodes = new List<Node>();
+    private List<Vector3> currentPathPoints = new List<Vector3>();
+    private int currentPathIndex = 0;
+    private Vector3 originalBodyLocalPos;
+    private bool isUnderground = false;
+    public bool CanSearchPlayer => waitTimer <= 0f;
+
+    [Header("Gimmighoul")]
+    [SerializeField] private LayerMask wallLayerMask;
+    [SerializeField] private float gimmighoulNodeThreshold = 0.4f;
+    private Transform targetCoin;
+    private List<Vector3> thetaPathPoints = new List<Vector3>();
+    private int thetaPathIndex = 0;
+    public bool HasTargetCoin => targetCoin != null;
+
     [Header("Tree")]
     private Node_Decision tree;
     private PKMNContext context;
 
-
     private void Awake()
     {
-        //References
         pkmnRb = GetComponent<Rigidbody>();
         los = GetComponent<LineOfSight>();
         if (player != null)
             playerRb = player.GetComponent<Rigidbody>();
 
-        //Wander restart
         wanderDirection = transform.forward;
         wanderTimer = 0f;
+
+        if(sandygastBodyMesh != null)
+            originalBodyLocalPos = sandygastBodyMesh.localPosition;
+
+        Node[] foundNodes = FindObjectsByType<Node>(FindObjectsSortMode.None);
+        circuitNodes.AddRange(foundNodes);
     }
 
     private void Start()
     {
         context = new PKMNContext { self = transform, player = player, los = los };
 
-        //References to tree
         switch (personality)
         {
             case Personality.Aggresive:
@@ -105,6 +135,12 @@ public class PKMNController : MonoBehaviour
             case Personality.Tower:
                 tree = PKMNDecisionTree.CreateTowerTree();
                 break;
+            case Personality.Sandygast:
+                tree = PKMNDecisionTree.CreateSandygastTree();
+                break;
+            case Personality.Gimmighoul:
+                tree = PKMNDecisionTree.CreateGimmighoulTree();
+                break;
         }
     }
 
@@ -113,48 +149,70 @@ public class PKMNController : MonoBehaviour
         if (state == State.Captured)
             return;
 
+        if (state == State.Gimmighoul_MovingToCoin)
+        {
+            GimmighoulMoveToCoin();
+            return;
+        }
+        if (state == State.Sandygast_Moving)
+        {
+            SandygastMoveUnderground();
+            return;
+        }
         if (isFleeing)
         {
             state = State.ToLake;
         }
         else
         {
+            if (state == State.Sandygast_Idle && waitTimer > 0f)
+            {
+                waitTimer -= Time.deltaTime;
+            }
+
             tree.Evaluate(this, context);
         }
 
         Vector3 dir = Vector3.zero;
-
 
         switch (state)
         {
             case State.Arrive:
                 dir = SteeringBehaviours.Arrive(transform, player.position, 5f);
                 break;
+
             case State.Attack:
                 Attack();
                 dir = Vector3.zero;
                 break;
+
             case State.Evade:
                 dir = SteeringBehaviours.Evade(transform, player, playerRb, maxPredictionTime, slowRadious);
                 break;
+
             case State.Flee:
                 dir = SteeringBehaviours.Flee(transform, player.position);
                 NaturalFlee();
                 break;
+
             case State.Pursue:
                 dir = SteeringBehaviours.Pursue(transform, player, playerRb, maxPredictionTime, slowRadious);
                 break;
+
             case State.Seek:
                 dir = SteeringBehaviours.Seek(transform, player.position);
                 break;
+
             case State.Tower:
                 TowerRotation();
                 pkmnRb.linearVelocity = Vector3.zero;
                 break;
+
             case State.ToLake:
                 isFleeing = true;
                 dir = SteeringBehaviours.Seek(transform, lakeTarget.position);
                 break;
+
             case State.Wander:
                 wanderTimer -= Time.deltaTime;
                 if (wanderTimer <= 0f)
@@ -164,28 +222,44 @@ public class PKMNController : MonoBehaviour
                 }
                 dir = wanderDirection;
                 break;
+
+            case State.Sandygast_Idle:
+                pkmnRb.linearVelocity = new Vector3(0, pkmnRb.linearVelocity.y, 0);
+                EmergFromSand();
+                break;
+
+            case State.Gimmighoul_SearchCoin:
+                SearchNearestCoin();
+                break;
         }
         Move(dir);
     }
 
     private void Move(Vector3 dir)
     {
+        
         Vector3 hSpeed = dir * speed;
         float currentVSpeed = pkmnRb.linearVelocity.y;
 
         pkmnRb.linearVelocity = new Vector3(hSpeed.x, currentVSpeed, hSpeed.z);
-        
-        if (dir.sqrMagnitude > 0.01f)
+
+        if (dir.sqrMagnitude > 0.05f)
         {
             float angle = Mathf.Atan2(dir.x, dir.z) * Mathf.Rad2Deg;
             Quaternion targetRotation = Quaternion.Euler(0, angle, 0);
             transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, Time.deltaTime * rotationSpeed);
         }
+
     }
 
-    public void SetState(State state)
+    public void SetState(State newState)
     {
-        this.state = state;
+        if (state == newState)
+        {
+            return;
+        }
+
+        state = newState;
     }
 
     private Vector3 NaturalFlee()
@@ -209,7 +283,6 @@ public class PKMNController : MonoBehaviour
         pkmnRb.isKinematic = true;
 
         gameObject.SetActive(false);
-        //Tras animación destruir. Todavía no por las dudas :P
     }
 
     private void Attack()
@@ -264,5 +337,205 @@ public class PKMNController : MonoBehaviour
     {
         Renderer[] renders = GetComponentsInChildren<Renderer>();
         foreach (Renderer r in renders) r.enabled = visible;
+    }
+
+    public void StartSandygastSubmergeAndPathfind()
+    {
+        if (circuitNodes.Count == 0 || state == State.Sandygast_Moving) return;
+
+        Node startNode = GetClosestNode(transform.position);
+        if (startNode == null) return;
+
+        Node targetNode = startNode;
+        int safetyNet = 0;
+        while (targetNode == startNode && safetyNet < 10)
+        {
+            targetNode = circuitNodes[Random.Range(0, circuitNodes.Count)];
+            safetyNet++;
+        }
+
+        List<Node> path = AStar.Run(
+            startNode,
+            node => node == targetNode,
+            node => node.neighbours,
+            (n1, n2) => Vector3.Distance(n1.transform.position, n2.transform.position),
+            node => Vector3.Distance(node.transform.position, targetNode.transform.position)
+        );
+
+        if (path != null && path.Count > 0)
+        {
+            currentPathPoints.Clear();
+            foreach (var node in path)
+            {
+                currentPathPoints.Add(node.transform.position);
+            }
+            currentPathIndex = 0;
+            state = State.Sandygast_Moving;
+            isUnderground = true;
+        }
+    }
+
+    public void SandygastMoveUnderground()
+    {
+        if (sandygastBodyMesh != null)
+        {
+            sandygastBodyMesh.localPosition = Vector3.Lerp(sandygastBodyMesh.localPosition,
+                new Vector3(originalBodyLocalPos.x, undergroundYOffset, originalBodyLocalPos.z), Time.deltaTime * 5f);
+        }
+
+        if (currentPathPoints == null || currentPathIndex >= currentPathPoints.Count)
+        {
+            EndSandygastMovement();
+            return;
+        }
+
+        Vector3 targetPoint = currentPathPoints[currentPathIndex];
+        targetPoint.y = transform.position.y;
+
+        if (Vector3.Distance(transform.position, targetPoint) < sandygastNodeDistanceThreshold)
+        {
+            currentPathIndex++;
+            if (currentPathIndex >= currentPathPoints.Count)
+            {
+                EndSandygastMovement();
+                return;
+            }
+        }
+
+        Vector3 dir = SteeringBehaviours.Seek(transform, currentPathPoints[currentPathIndex]);
+        Move(dir);
+    }
+
+    private void EmergFromSand()
+    {
+        if (sandygastBodyMesh != null)
+        {
+            sandygastBodyMesh.localPosition = Vector3.Lerp(sandygastBodyMesh.localPosition, originalBodyLocalPos, Time.deltaTime * 5f);
+        }
+    }
+
+    private Node GetClosestNode(Vector3 position)
+    {
+        Node closest = null;
+        float nearDistance = Mathf.Infinity;
+        foreach (Node node in circuitNodes)
+        {
+            float distance = Vector3.Distance(position, node.transform.position);
+            if (distance < nearDistance)
+            {
+                nearDistance = distance;
+                closest = node;
+            }
+        }
+        return closest;
+    }
+
+    private void EndSandygastMovement()
+    {
+        pkmnRb.linearVelocity = new Vector3(0, pkmnRb.linearVelocity.y, 0);
+        state = State.Sandygast_Idle;
+        isUnderground = false;
+
+        waitTimer = surfaceWaitTime;
+    }
+
+    private void SearchNearestCoin()
+    {
+        GameObject coinObj = GameObject.FindWithTag("GimmighoulCoin");
+        if (coinObj != null)
+        {
+            targetCoin = coinObj.transform;
+            CalculateThetaStarPath();
+        }
+        else
+        {
+            pkmnRb.linearVelocity = new Vector3(0, pkmnRb.linearVelocity.y, 0);
+        }
+    }
+
+    private void CalculateThetaStarPath()
+    {
+        if (targetCoin == null) return;
+
+        Node startNode = GetClosestNode(transform.position);
+        Node targetNode = GetClosestNode(targetCoin.position);
+
+        if (startNode == null || targetNode == null) return;
+
+        List<Node> path = ThetaStar.Run(
+            startNode,
+            node => node == targetNode,
+            node => node.neighbours,
+            (n1, n2) => Vector3.Distance(n1.transform.position, n2.transform.position),
+            node => Vector3.Distance(node.transform.position, targetNode.transform.position),
+            (n1, n2) => {
+                Vector3 dir = n2.transform.position - n1.transform.position;
+                return !Physics.Raycast(n1.transform.position + Vector3.up * 0.2f, dir.normalized, dir.magnitude, wallLayerMask);
+            }
+        );
+
+        if (path != null && path.Count > 0)
+        {
+            thetaPathPoints.Clear();
+            foreach (var node in path)
+            {
+                thetaPathPoints.Add(node.transform.position);
+            }
+            thetaPathPoints.Add(targetCoin.position);
+            thetaPathIndex = 0;
+            state = State.Gimmighoul_MovingToCoin;
+        }
+    }
+
+    private void GimmighoulMoveToCoin()
+    {
+        if (targetCoin == null || thetaPathIndex >= thetaPathPoints.Count)
+        {
+            state = State.Gimmighoul_SearchCoin;
+            return;
+        }
+
+        Vector3 currentTarget = thetaPathPoints[thetaPathIndex];
+        currentTarget.y = transform.position.y;
+
+        float distance = Vector3.Distance(transform.position, currentTarget);
+
+        if (distance < gimmighoulNodeThreshold)
+        {
+            thetaPathIndex++;
+            if (thetaPathIndex >= thetaPathPoints.Count)
+            {
+                pkmnRb.linearVelocity = new Vector3(0, pkmnRb.linearVelocity.y, 0);
+                state = State.Gimmighoul_SearchCoin;
+                return;
+            }
+            return;
+        }
+
+        Vector3 dir = SteeringBehaviours.Seek(transform, thetaPathPoints[thetaPathIndex]);
+
+        if (dir.sqrMagnitude > 0.01f)
+        {
+            Move(dir);
+        }
+        else
+        {
+            pkmnRb.linearVelocity = new Vector3(0, pkmnRb.linearVelocity.y, 0);
+        }
+    }
+
+    public void OnCoinCollected()
+    {
+        targetCoin = null;
+        thetaPathPoints.Clear();
+
+        thetaPathIndex = 0;
+        if (pkmnRb != null)
+        {
+            pkmnRb.linearVelocity = Vector3.zero;
+            pkmnRb.angularVelocity = Vector3.zero;
+        }
+
+        state = State.Gimmighoul_SearchCoin;
     }
 }
