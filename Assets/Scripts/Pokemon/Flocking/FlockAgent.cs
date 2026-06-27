@@ -4,7 +4,7 @@ using UnityEngine;
 public class FlockAgent : MonoBehaviour
 {
     private FlockManager manager;
-    private Rigidbody rb;
+    public Rigidbody rb { get; private set; }
 
     public void Initialize(FlockManager flockManager)
     {
@@ -19,7 +19,7 @@ public class FlockAgent : MonoBehaviour
 
     private void Start()
     {
-        if (rb.linearVelocity == Vector3.zero)
+        if (rb.linearVelocity == Vector3.zero && manager != null)
         {
             Vector3 randomDir = Random.onUnitSphere;
             rb.linearVelocity = randomDir * Random.Range(manager.MinSpeed, manager.MaxSpeed);
@@ -58,10 +58,10 @@ public class FlockAgent : MonoBehaviour
 ;       }
         rb.linearVelocity = newVelocity;
 
-        if (rb.linearVelocity.sqrMagnitude < 0.001f)
+        if (rb.linearVelocity.sqrMagnitude > 0.01f)
         {
             Quaternion targetRotation = Quaternion.LookRotation(rb.linearVelocity.normalized);
-            rb.MoveRotation(Quaternion.Slerp(rb.rotation, targetRotation, 8f * Time.fixedDeltaTime));
+            rb.MoveRotation(Quaternion.Slerp(rb.rotation, targetRotation, 5f * Time.fixedDeltaTime));
         }
     }
 
@@ -73,7 +73,7 @@ public class FlockAgent : MonoBehaviour
         {
             FlockAgent other = manager.Agents[i];
 
-            if(other == this) continue;
+            if (other == this || other == null) continue;
 
             Vector3 offset = transform.position - other.transform.position;
             float distance = offset.magnitude;
@@ -102,7 +102,7 @@ public class FlockAgent : MonoBehaviour
         {
             FlockAgent other = manager.Agents[i];
 
-            if (other == this) continue;
+            if (other == this || other == null) continue;
 
             float distance = Vector3.Distance(transform.position, other.transform.position);
 
@@ -117,10 +117,6 @@ public class FlockAgent : MonoBehaviour
             return Vector3.zero;
 
         averageVelocity /= count;
-
-        if(averageVelocity == Vector3.zero)
-            return Vector3.zero;
-
         return averageVelocity.normalized;
     }
 
@@ -132,13 +128,13 @@ public class FlockAgent : MonoBehaviour
         for (int i = 0; i < manager.Agents.Count; i++)
         {
             FlockAgent other = manager.Agents[i];
-            if (other == this) continue;
+            if (other == this || other == null) continue;
 
             float distance = Vector3.Distance(transform.position, other.transform.position);
 
             if (distance < manager.NeighboursRadious)
             {
-                center += other.rb.linearVelocity;
+                center += other.transform.position;
                 count++;
             }
         }
@@ -148,10 +144,6 @@ public class FlockAgent : MonoBehaviour
 
         center /= count;
         Vector3 dirToCenter = center - transform.position;
-
-        if (dirToCenter == Vector3.zero)
-            return Vector3.zero;
-
         return dirToCenter.normalized;
     }
 
@@ -161,10 +153,6 @@ public class FlockAgent : MonoBehaviour
             return Vector3.zero;
 
         Vector3 dir = manager.GlobalTarget.position - transform.position;
-
-        if (dir == Vector3.zero)
-            return Vector3.zero;
-
         return dir.normalized;
     }
 
@@ -182,10 +170,6 @@ public class FlockAgent : MonoBehaviour
             return Vector3.zero;
 
         Vector3 dirToCenter = center - transform.position;
-
-        if (dirToCenter == Vector3.zero)
-            return Vector3.zero;
-
         return dirToCenter.normalized;
     }
 }

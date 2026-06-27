@@ -45,11 +45,9 @@ public class PKMNController : MonoBehaviour
     [SerializeField] private float speed = 3f;
     [SerializeField] private float rotationSpeed = 5f;
     [SerializeField] private float maxPredictionTime = 10f;
-    [SerializeField] private float maxAngleChange = 90f;
 
     [Header("Wander")]
     [SerializeField] private float wanderChangeInterval = 1.5f;
-    [SerializeField] private float wanderTurnSpeed = 30f;
     private Vector3 wanderDirection;
     private float wanderTimer;
 
@@ -82,7 +80,6 @@ public class PKMNController : MonoBehaviour
     private List<Vector3> currentPathPoints = new List<Vector3>();
     private int currentPathIndex = 0;
     private Vector3 originalBodyLocalPos;
-    private bool isUnderground = false;
     public bool CanSearchPlayer => waitTimer <= 0f;
 
     [Header("Gimmighoul")]
@@ -371,7 +368,6 @@ public class PKMNController : MonoBehaviour
             }
             currentPathIndex = 0;
             state = State.Sandygast_Moving;
-            isUnderground = true;
         }
     }
 
@@ -434,7 +430,6 @@ public class PKMNController : MonoBehaviour
     {
         pkmnRb.linearVelocity = new Vector3(0, pkmnRb.linearVelocity.y, 0);
         state = State.Sandygast_Idle;
-        isUnderground = false;
 
         waitTimer = surfaceWaitTime;
     }
