@@ -57,17 +57,17 @@ public class PKMNDecisionTree : MonoBehaviour
         return new Node_Question(ctx => ctx.los.LOS(ctx.self, ctx.player), distCheck, wander);
     }
 
-    public static Node_Decision CreateTowerTree()
+    public static Node_Decision CreateWimpodTree()
     {
-        Node_Action toLake = new Node_Action(pkmn => pkmn.SetState(PKMNController.State.ToLake));
-        Node_Action tower = new Node_Action(pkmn => pkmn.SetState(PKMNController.State.Tower));
+        Node_Action toLake = new Node_Action(pkmn => pkmn.SetState(PKMNController.State.Wimpod_Lake));
+        Node_Action tower = new Node_Action(pkmn => pkmn.SetState(PKMNController.State.Wimpod_Tower));
 
         return new Node_Question(ctx => ctx.los.LOS(ctx.self, ctx.player), toLake, tower);
     }
 
     public static Node_Decision CreateSandygastTree()
     {
-        Node_Action triggerDig = new Node_Action(pkmn => pkmn.StartSandygastSubmergeAndPathfind());
+        Node_Action triggerDig = new Node_Action(pkmn => pkmn.SandySubmerge());
         Node_Action stayIdle = new Node_Action(pkmn => pkmn.SetState(PKMNController.State.Sandygast_Idle));
 
         Node_Question losCheck = new Node_Question(ctx => ctx.los.LOS(ctx.self, ctx.player), triggerDig, stayIdle);

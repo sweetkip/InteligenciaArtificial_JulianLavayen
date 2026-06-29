@@ -11,10 +11,10 @@ public class PKMNController : MonoBehaviour
         Flee,
         Pursue,
         Seek,
-        ToLake,
-        Tower,
         Wander,
         Captured,
+        Wimpod_Lake,
+        Wimpod_Tower,
         Sandygast_Idle,
         Sandygast_Moving,
         Gimmighoul_SearchCoin,
@@ -28,7 +28,7 @@ public class PKMNController : MonoBehaviour
         Coward,
         Panic,
         Neutral,
-        Tower,
+        Wimpod,
         Sandygast,
         Gimmighoul
     }
@@ -131,8 +131,8 @@ public class PKMNController : MonoBehaviour
             case Personality.Panic:
                 tree = PKMNDecisionTree.CreatePanicTree();
                 break;
-            case Personality.Tower:
-                tree = PKMNDecisionTree.CreateTowerTree();
+            case Personality.Wimpod:
+                tree = PKMNDecisionTree.CreateWimpodTree();
                 break;
             case Personality.Sandygast:
                 tree = PKMNDecisionTree.CreateSandygastTree();
@@ -150,7 +150,7 @@ public class PKMNController : MonoBehaviour
 
         if (isFleeing)
         {
-            state = State.ToLake;
+            state = State.Wimpod_Lake;
         }
         else
         {
@@ -191,12 +191,12 @@ public class PKMNController : MonoBehaviour
                 dir = SteeringBehaviours.Seek(transform, player.position);
                 break;
 
-            case State.Tower:
+            case State.Wimpod_Tower:
                 TowerRotation();
                 pkmnRb.linearVelocity = Vector3.zero;
                 break;
 
-            case State.ToLake:
+            case State.Wimpod_Lake:
                 isFleeing = true;
                 dir = SteeringBehaviours.Seek(transform, lakeTarget.position);
                 break;
@@ -311,7 +311,7 @@ public class PKMNController : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Water") && personality == Personality.Tower)
+        if (other.CompareTag("Water") && personality == Personality.Wimpod)
         {
             StartCoroutine(RespawnRoutine());
         }
@@ -329,7 +329,7 @@ public class PKMNController : MonoBehaviour
         isFleeing = false;
 
         WimpodVisible(true);
-        state = State.Tower;
+        state = State.Wimpod_Tower;
     }
 
     private void WimpodVisible(bool visible)
@@ -338,15 +338,8 @@ public class PKMNController : MonoBehaviour
         foreach (Renderer r in renders) r.enabled = visible;
     }
 
-    // ------------------------------------
-    // ----------- PATH FINDING -----------
-    // ------------------------------------
 
-    // ------------------------------------
-    // ----------- PATH FINDING -----------
-    // ------------------------------------
-
-    public void StartSandygastSubmergeAndPathfind()
+    public void SandySubmerge()
     {
         if (circuitNodes.Count == 0 || state == State.Sandygast_Moving)
             return;
