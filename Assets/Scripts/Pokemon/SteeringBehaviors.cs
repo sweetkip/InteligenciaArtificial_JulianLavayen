@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public static class SteeringBehaviours
@@ -63,6 +64,31 @@ public static class SteeringBehaviours
         newDirection.y = 0f;
 
         return newDirection.normalized;
+    }
+
+
+    public static Vector3 FollowPath(Transform self, List<Vector3> path, ref int currentWaypoint, float threshold)
+    {
+        if (path == null || path.Count == 0 || currentWaypoint >= path.Count)
+            return Vector3.zero;
+
+        Vector3 target = path[currentWaypoint];
+        Vector3 dir = target - self.position;
+        dir.y = 0f;
+
+        if (dir.magnitude < threshold)
+        {
+            currentWaypoint++;
+
+            if (currentWaypoint >= path.Count)
+                return Vector3.zero;
+
+            target = path[currentWaypoint];
+            dir = target - self.position;
+            dir.y = 0f;
+        }
+
+        return dir.normalized;
     }
 
 

@@ -15,7 +15,8 @@ public class CoinManager : MonoBehaviour
 
     public void SpawnNewCoin()
     {
-        if (allowedNodes == null || allowedNodes.Count == 0) return;
+        if (allowedNodes == null || allowedNodes.Count == 0)
+            return;
 
         Node randomNode = allowedNodes[Random.Range(0, allowedNodes.Count)];
 

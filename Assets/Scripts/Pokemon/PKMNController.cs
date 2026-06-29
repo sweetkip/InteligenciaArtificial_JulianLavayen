@@ -37,6 +37,8 @@ public class PKMNController : MonoBehaviour
     [SerializeField] private Transform player;
     [SerializeField] private Rigidbody playerRb;
     [SerializeField] private LineOfSight los;
+    [SerializeField] private AudioClip captureSound;
+    [SerializeField] private AudioSource audioSource;
     private Rigidbody pkmnRb;
 
     [Header("Values")]
@@ -146,16 +148,6 @@ public class PKMNController : MonoBehaviour
         if (state == State.Captured)
             return;
 
-        if (state == State.Gimmighoul_MovingToCoin)
-        {
-            GimmighoulMoveToCoin();
-            return;
-        }
-        if (state == State.Sandygast_Moving)
-        {
-            SandygastMoveUnderground();
-            return;
-        }
         if (isFleeing)
         {
             state = State.ToLake;
@@ -188,8 +180,7 @@ public class PKMNController : MonoBehaviour
                 break;
 
             case State.Flee:
-                dir = SteeringBehaviours.Flee(transform, player.position);
-                NaturalFlee();
+                dir = NaturalFlee();
                 break;
 
             case State.Pursue:
@@ -225,8 +216,23 @@ public class PKMNController : MonoBehaviour
                 EmergFromSand();
                 break;
 
+            case State.Sandygast_Moving:
+                dir = SteeringBehaviours.FollowPath(transform, currentPathPoints, ref currentPathIndex, sandygastNodeDistanceThreshold);
+                if (dir == Vector3.zero && currentPathIndex >=  currentPathPoints.Count)
+                {
+                    waitTimer = surfaceWaitTime;
+                    SetState(State.Sandygast_Idle);
+                }
+                break;
+
             case State.Gimmighoul_SearchCoin:
                 SearchNearestCoin();
+                break;
+
+            case State.Gimmighoul_MovingToCoin:
+                dir = SteeringBehaviours.FollowPath(transform, thetaPathPoints, ref thetaPathIndex, gimmighoulNodeThreshold);
+                if (dir == Vector3.zero && thetaPathIndex >= thetaPathPoints.Count)
+                    SetState(State.Gimmighoul_SearchCoin);
                 break;
         }
         Move(dir);
@@ -262,19 +268,15 @@ public class PKMNController : MonoBehaviour
     private Vector3 NaturalFlee()
     {
         Vector3 finalDir = Vector3.zero;
-        
-        if (state == State.Flee)
-        {
-            finalDir += SteeringBehaviours.Flee(transform, player.position) * 0.8f;
-
-            finalDir += wanderDirection * 0.2f;
-        }
+        finalDir += SteeringBehaviours.Flee(transform, player.position) * 0.8f;
+        finalDir += wanderDirection * 0.2f;
         return finalDir.normalized;
     }
 
     public void OnCaptured()
     {
-        SetState(State.Captured);
+        audioSource.PlayOneShot(captureSound);
+        SetState(State.Captured);        
 
         pkmnRb.linearVelocity = Vector3.zero;
         pkmnRb.isKinematic = true;
@@ -336,20 +338,35 @@ public class PKMNController : MonoBehaviour
         foreach (Renderer r in renders) r.enabled = visible;
     }
 
+    // ------------------------------------
+    // ----------- PATH FINDING -----------
+    // ------------------------------------
+
+    // ------------------------------------
+    // ----------- PATH FINDING -----------
+    // ------------------------------------
+
     public void StartSandygastSubmergeAndPathfind()
     {
-        if (circuitNodes.Count == 0 || state == State.Sandygast_Moving) return;
+        if (circuitNodes.Count == 0 || state == State.Sandygast_Moving)
+            return;
 
         Node startNode = GetClosestNode(transform.position);
-        if (startNode == null) return;
+        if (startNode == null)
+            return;
 
         Node targetNode = startNode;
-        int safetyNet = 0;
-        while (targetNode == startNode && safetyNet < 10)
+        if (circuitNodes.Count > 1)
         {
-            targetNode = circuitNodes[Random.Range(0, circuitNodes.Count)];
-            safetyNet++;
+            int safetyNet = 0;
+            while (targetNode == startNode && safetyNet < 10)
+            {
+                targetNode = circuitNodes[Random.Range(0, circuitNodes.Count)];
+                safetyNet++;
+            }
         }
+        else
+            targetNode = circuitNodes[0];
 
         List<Node> path = AStar.Run(
             startNode,
@@ -367,71 +384,20 @@ public class PKMNController : MonoBehaviour
                 currentPathPoints.Add(node.transform.position);
             }
             currentPathIndex = 0;
-            state = State.Sandygast_Moving;
+
+            if (sandygastBodyMesh != null)
+                sandygastBodyMesh.localPosition = new Vector3(originalBodyLocalPos.x, undergroundYOffset, originalBodyLocalPos.z);
+
+            SetState(State.Sandygast_Moving);
         }
     }
-
-    public void SandygastMoveUnderground()
-    {
-        if (sandygastBodyMesh != null)
-        {
-            sandygastBodyMesh.localPosition = Vector3.Lerp(sandygastBodyMesh.localPosition,
-                new Vector3(originalBodyLocalPos.x, undergroundYOffset, originalBodyLocalPos.z), Time.deltaTime * 5f);
-        }
-
-        if (currentPathPoints == null || currentPathIndex >= currentPathPoints.Count)
-        {
-            EndSandygastMovement();
-            return;
-        }
-
-        Vector3 targetPoint = currentPathPoints[currentPathIndex];
-        targetPoint.y = transform.position.y;
-
-        if (Vector3.Distance(transform.position, targetPoint) < sandygastNodeDistanceThreshold)
-        {
-            currentPathIndex++;
-            if (currentPathIndex >= currentPathPoints.Count)
-            {
-                EndSandygastMovement();
-                return;
-            }
-        }
-
-        Vector3 dir = SteeringBehaviours.Seek(transform, currentPathPoints[currentPathIndex]);
-        Move(dir);
-    }
-
+    
     private void EmergFromSand()
     {
         if (sandygastBodyMesh != null)
         {
-            sandygastBodyMesh.localPosition = Vector3.Lerp(sandygastBodyMesh.localPosition, originalBodyLocalPos, Time.deltaTime * 5f);
+            sandygastBodyMesh.localPosition = Vector3.Lerp(sandygastBodyMesh.localPosition, originalBodyLocalPos, Time.deltaTime * rotationSpeed);
         }
-    }
-
-    private Node GetClosestNode(Vector3 position)
-    {
-        Node closest = null;
-        float nearDistance = Mathf.Infinity;
-        foreach (Node node in circuitNodes)
-        {
-            float distance = Vector3.Distance(position, node.transform.position);
-            if (distance < nearDistance)
-            {
-                nearDistance = distance;
-                closest = node;
-            }
-        }
-        return closest;
-    }
-
-    private void EndSandygastMovement()
-    {
-        pkmnRb.linearVelocity = new Vector3(0, pkmnRb.linearVelocity.y, 0);
-        state = State.Sandygast_Idle;
-
-        waitTimer = surfaceWaitTime;
     }
 
     private void SearchNearestCoin()
@@ -440,7 +406,7 @@ public class PKMNController : MonoBehaviour
         if (coinObj != null)
         {
             targetCoin = coinObj.transform;
-            CalculateThetaStarPath();
+            ThetaPath();
         }
         else
         {
@@ -448,7 +414,7 @@ public class PKMNController : MonoBehaviour
         }
     }
 
-    private void CalculateThetaStarPath()
+    private void ThetaPath()
     {
         if (targetCoin == null) return;
 
@@ -482,55 +448,28 @@ public class PKMNController : MonoBehaviour
         }
     }
 
-    private void GimmighoulMoveToCoin()
-    {
-        if (targetCoin == null || thetaPathIndex >= thetaPathPoints.Count)
-        {
-            state = State.Gimmighoul_SearchCoin;
-            return;
-        }
-
-        Vector3 currentTarget = thetaPathPoints[thetaPathIndex];
-        currentTarget.y = transform.position.y;
-
-        float distance = Vector3.Distance(transform.position, currentTarget);
-
-        if (distance < gimmighoulNodeThreshold)
-        {
-            thetaPathIndex++;
-            if (thetaPathIndex >= thetaPathPoints.Count)
-            {
-                pkmnRb.linearVelocity = new Vector3(0, pkmnRb.linearVelocity.y, 0);
-                state = State.Gimmighoul_SearchCoin;
-                return;
-            }
-            return;
-        }
-
-        Vector3 dir = SteeringBehaviours.Seek(transform, thetaPathPoints[thetaPathIndex]);
-
-        if (dir.sqrMagnitude > 0.01f)
-        {
-            Move(dir);
-        }
-        else
-        {
-            pkmnRb.linearVelocity = new Vector3(0, pkmnRb.linearVelocity.y, 0);
-        }
-    }
-
     public void OnCoinCollected()
     {
         targetCoin = null;
         thetaPathPoints.Clear();
 
-        thetaPathIndex = 0;
-        if (pkmnRb != null)
-        {
-            pkmnRb.linearVelocity = Vector3.zero;
-            pkmnRb.angularVelocity = Vector3.zero;
-        }
+        SetState(State.Gimmighoul_SearchCoin);
+    }
 
-        state = State.Gimmighoul_SearchCoin;
+
+    private Node GetClosestNode(Vector3 position)
+    {
+        Node closest = null;
+        float nearDistance = Mathf.Infinity;
+        foreach (Node node in circuitNodes)
+        {
+            float distance = Vector3.Distance(position, node.transform.position);
+            if (distance < nearDistance)
+            {
+                nearDistance = distance;
+                closest = node;
+            }
+        }
+        return closest;
     }
 }

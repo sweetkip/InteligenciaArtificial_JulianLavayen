@@ -10,6 +10,7 @@ public class NewControls : MonoBehaviour
     [SerializeField] private float crouchSpeed = 1.5f;
     [SerializeField] private float gravity = -9.81f;
     [SerializeField] private float jumpHeight = 1.5f;
+    [SerializeField] private float rotationSpeed = 10f;
 
     [Header("Look")]
     [SerializeField] private Transform cameraTrans;
@@ -42,9 +43,14 @@ public class NewControls : MonoBehaviour
 
     [Header("References")]
     [SerializeField] private Animator anim;
+    [SerializeField] private Transform playerModel;
+
+    [Header("Music")]
+    [SerializeField] private AudioSource music;
+    [SerializeField] private AudioClip[] tracks;
+    private int currentTrack = 0;
 
     private CharacterController characterController;
-    private AudioSource audioSource;
     private PlayerControls playerControls;
 
     private Vignette vignette;
@@ -61,7 +67,11 @@ public class NewControls : MonoBehaviour
     private void Awake()
     {
         characterController = GetComponent<CharacterController>();
-        if (anim == null) anim = GetComponentInChildren<Animator>();
+        if (anim == null)
+            anim = GetComponentInChildren<Animator>();
+
+        if (playerModel == null)
+            playerModel = transform.Find("Red");
 
         playerControls = new PlayerControls();
 
@@ -110,6 +120,9 @@ public class NewControls : MonoBehaviour
     {
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+
+        music.clip = tracks[currentTrack];
+        music.Play();
     }
 
     private void Update()
@@ -137,6 +150,15 @@ public class NewControls : MonoBehaviour
         }
 
         Vector3 moveDirection = transform.forward * moveInput.y + transform.right * moveInput.x;
+        if (moveDirection.magnitude > 1f)
+            moveDirection.Normalize();
+        
+        if (playerModel != null && moveDirection.magnitude > 0.1f)
+        {
+            Quaternion targetRotation = Quaternion.LookRotation(moveDirection);
+            playerModel.rotation = Quaternion.Lerp(playerModel.rotation, targetRotation, Time.deltaTime * rotationSpeed);
+        }
+
         characterController.Move(moveDirection * currentSpeed * Time.deltaTime);
 
         velocity.y += gravity * Time.deltaTime;
@@ -209,6 +231,10 @@ public class NewControls : MonoBehaviour
         {
             insideObstacle = true;
         }
+        if (other.gameObject.layer == LayerMask.NameToLayer("Music"))
+        {
+            ChangeMusic();
+        }
     }
 
     private void OnTriggerExit(Collider other)
@@ -271,5 +297,17 @@ public class NewControls : MonoBehaviour
                 healthBar.SetFloat("_hitTime", Time.time);
             }
         }
+    }
+
+    private void ChangeMusic()
+    {
+        currentTrack++;
+
+        if (currentTrack >= tracks.Length)
+            currentTrack = 0;
+
+        music.Stop();
+        music.clip = tracks[currentTrack];
+        music.Play();
     }
 }
