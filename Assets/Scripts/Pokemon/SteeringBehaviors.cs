@@ -17,25 +17,6 @@ public static class SteeringBehaviours
     }
 
 
-    public static Vector3 Evade(Transform self,
-                                Transform target,
-                                Rigidbody targetRb,
-                                float maxPredictionTime,
-                                float slowRadious)
-    {
-        Vector3 futurePos = CalculateFuture(self, target, targetRb, maxPredictionTime, slowRadious);
-        return Flee(self, futurePos);
-    }
-
-
-    public static Vector3 Flee(Transform self, Vector3 target)
-    {
-        Vector3 dir = self.position - target;
-        dir.y = 0;
-        return dir.normalized;
-    }
-
-
     public static Vector3 Pursue(Transform self,
                                  Transform target,
                                  Rigidbody targetRb,

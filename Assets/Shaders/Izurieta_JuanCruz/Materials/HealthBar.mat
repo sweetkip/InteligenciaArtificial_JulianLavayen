@@ -113,7 +113,7 @@ Material:
     - _GlossMapScale: 0
     - _Glossiness: 0
     - _GlossyReflections: 0
-    - _Health: 1
+    - _Health: 0.6666667
     - _Metallic: 0
     - _OcclusionStrength: 1
     - _Parallax: 0.005
@@ -135,7 +135,7 @@ Material:
     - _WorkflowMode: 1
     - _XRMotionVectorsPass: 1
     - _ZWrite: 1
-    - _hitTime: 0
+    - _hitTime: 165.81995
     - _tiempoHit: 0
     - _vida: 1
     m_Colors:

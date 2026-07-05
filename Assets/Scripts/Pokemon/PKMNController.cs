@@ -5,14 +5,11 @@ public class PKMNController : MonoBehaviour
 {
     public enum State
     {
-        Arrive,
-        Attack,
-        Evade,
-        Flee,
-        Pursue,
-        Seek,
-        Wander,
-        Captured,
+        Arrive,         //Mudkip
+        Attack,         //Tinkaton
+        Pursue,         //Mudkip & Tinkaton
+        Wander,         //Mudkip & Tinkaton
+        Captured,       //All
         Wimpod_Lake,
         Wimpod_Tower,
         Sandygast_Idle,
@@ -23,14 +20,11 @@ public class PKMNController : MonoBehaviour
 
     public enum Personality
     {
-        Aggresive,
-        Attack,
-        Coward,
-        Panic,
-        Neutral,
+        Mudkip,
         Wimpod,
         Sandygast,
-        Gimmighoul
+        Gimmighoul,
+        Tinkaton
     }
 
     [Header("References")]
@@ -119,17 +113,11 @@ public class PKMNController : MonoBehaviour
 
         switch (personality)
         {
-            case Personality.Aggresive:
-                tree = PKMNDecisionTree.CreateAggresiveTree();
+            case Personality.Mudkip:
+                tree = PKMNDecisionTree.CreateMudkipTree();
                 break;
-            case Personality.Attack:
-                tree = PKMNDecisionTree.CreateAttackTree(attackRange);
-                break;
-            case Personality.Coward:
-                tree = PKMNDecisionTree.CreateCowardTree();
-                break;
-            case Personality.Panic:
-                tree = PKMNDecisionTree.CreatePanicTree();
+            case Personality.Tinkaton:
+                tree = PKMNDecisionTree.CreateTinkatonTree(attackRange);
                 break;
             case Personality.Wimpod:
                 tree = PKMNDecisionTree.CreateWimpodTree();
@@ -175,20 +163,8 @@ public class PKMNController : MonoBehaviour
                 dir = Vector3.zero;
                 break;
 
-            case State.Evade:
-                dir = SteeringBehaviours.Evade(transform, player, playerRb, maxPredictionTime, slowRadious);
-                break;
-
-            case State.Flee:
-                dir = NaturalFlee();
-                break;
-
             case State.Pursue:
                 dir = SteeringBehaviours.Pursue(transform, player, playerRb, maxPredictionTime, slowRadious);
-                break;
-
-            case State.Seek:
-                dir = SteeringBehaviours.Seek(transform, player.position);
                 break;
 
             case State.Wimpod_Tower:
@@ -263,14 +239,6 @@ public class PKMNController : MonoBehaviour
         }
 
         state = newState;
-    }
-
-    private Vector3 NaturalFlee()
-    {
-        Vector3 finalDir = Vector3.zero;
-        finalDir += SteeringBehaviours.Flee(transform, player.position) * 0.8f;
-        finalDir += wanderDirection * 0.2f;
-        return finalDir.normalized;
     }
 
     public void OnCaptured()

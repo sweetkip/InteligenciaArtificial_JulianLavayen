@@ -3316,7 +3316,7 @@ MonoBehaviour:
   captureSound: {fileID: 8300000, guid: 5bc0f91aa9bdef74894f276493289482, type: 3}
   audioSource: {fileID: 1288593364}
   state: 0
-  personality: 5
+  personality: 1
   speed: 100
   rotationSpeed: 60
   maxPredictionTime: 10
@@ -15184,7 +15184,7 @@ MonoBehaviour:
   captureSound: {fileID: 8300000, guid: 5bc0f91aa9bdef74894f276493289482, type: 3}
   audioSource: {fileID: 1288593364}
   state: 0
-  personality: 1
+  personality: 4
   speed: 50
   rotationSpeed: 60
   maxPredictionTime: 10
@@ -42761,7 +42761,7 @@ MonoBehaviour:
   captureSound: {fileID: 8300000, guid: 5bc0f91aa9bdef74894f276493289482, type: 3}
   audioSource: {fileID: 1288593364}
   state: 12
-  personality: 7
+  personality: 3
   speed: 40
   rotationSpeed: 5
   maxPredictionTime: 10
@@ -48487,7 +48487,7 @@ MonoBehaviour:
   captureSound: {fileID: 8300000, guid: 5bc0f91aa9bdef74894f276493289482, type: 3}
   audioSource: {fileID: 1288593364}
   state: 10
-  personality: 6
+  personality: 2
   speed: 50
   rotationSpeed: 5
   maxPredictionTime: 10
