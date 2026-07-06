@@ -9,7 +9,7 @@ public class SceneController : MonoBehaviour
     [SerializeField] private GameObject victory;
     [SerializeField] private GameObject defeat;
 
-    private int totalPokemon = 5;
+    private int totalPokemon = 8;
     private int caughtPokemon = 0;
 
     private void Awake()

@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PKMNController : MonoBehaviour
+public class PKMNControls : MonoBehaviour
 {
     public enum State
     {
@@ -15,8 +15,7 @@ public class PKMNController : MonoBehaviour
         Sandygast_Idle,
         Sandygast_Moving,
         Gimmighoul_SearchCoin,
-        Gimmighoul_MovingToCoin,
-        Heal
+        Gimmighoul_MovingToCoin
     }
 
     public enum Personality
@@ -25,8 +24,7 @@ public class PKMNController : MonoBehaviour
         Wimpod,
         Sandygast,
         Gimmighoul,
-        Tinkaton,
-        Mimikyu
+        Tinkaton
     }
 
     [Header("References")]
@@ -57,22 +55,12 @@ public class PKMNController : MonoBehaviour
     [SerializeField] private Transform attackPoint;
     [SerializeField] private float attackRange = 2.5f;
     [SerializeField] private float attackCooldown = 1.5f;
-    private float lastAttackTime;
-
-    [Header("Mimikyu")]
-    [SerializeField] private GameObject potionPrefab;
-    [SerializeField] private Transform healPoint;
-    [SerializeField] private float healRange = 2.5f;
-    [SerializeField] private float healCooldown = 1.5f;
-    private float lastHealTime;
 
     [Header("Wimpod")]
     [SerializeField] private Transform lakeTarget;
     [SerializeField] private float rotationInterval = 3f;
     [SerializeField] private float respawnTime = 5f;
     [SerializeField] private Transform initialPos;
-    private float nextRotationTime;
-    private float targetYaw;
     private bool isFleeing = false;
 
     [Header("Sandygast")]
@@ -94,9 +82,13 @@ public class PKMNController : MonoBehaviour
     private List<Vector3> thetaPathPoints = new List<Vector3>();
     private int thetaPathIndex = 0;
     public bool HasTargetCoin => targetCoin != null;
+    
 
-    [Header("Tree")]
-    private Node_Decision tree;
+    [Header("FSM")]
+    public State CurrentState => state;
+    public Personality CurrentPersonality => personality;
+    public float AttackRange => attackRange;
+    private PKMNFSM fsm;
     private PKMNContext context;
 
     private void Awake()
@@ -109,7 +101,7 @@ public class PKMNController : MonoBehaviour
         wanderDirection = transform.forward;
         wanderTimer = 0f;
 
-        if(sandygastBodyMesh != null)
+        if (sandygastBodyMesh != null)
             originalBodyLocalPos = sandygastBodyMesh.localPosition;
 
         Node[] foundNodes = FindObjectsByType<Node>(FindObjectsSortMode.None);
@@ -122,25 +114,15 @@ public class PKMNController : MonoBehaviour
 
         switch (personality)
         {
-            case Personality.Mudkip:
-                tree = PKMNDecisionTree.CreateMudkipTree();
-                break;
-            case Personality.Tinkaton:
-                tree = PKMNDecisionTree.CreateTinkatonTree(attackRange);
-                break;
-            case Personality.Wimpod:
-                tree = PKMNDecisionTree.CreateWimpodTree();
-                break;
             case Personality.Sandygast:
-                tree = PKMNDecisionTree.CreateSandygastTree();
+                SetState(State.Sandygast_Idle);
                 break;
             case Personality.Gimmighoul:
-                tree = PKMNDecisionTree.CreateGimmighoulTree();
-                break;
-            case Personality.Mimikyu:
-                tree = PKMNDecisionTree.CreateMimikyuTree(healRange);
+                SetState(State.Gimmighoul_SearchCoin);
                 break;
         }
+
+        fsm = new PKMNFSM(this, context);
     }
 
     private void FixedUpdate()
@@ -158,47 +140,13 @@ public class PKMNController : MonoBehaviour
             {
                 waitTimer -= Time.deltaTime;
             }
-
-            tree.Evaluate(this, context);
+            fsm.UpdateState();
         }
 
         Vector3 dir = Vector3.zero;
 
         switch (state)
         {
-            case State.Arrive:
-                dir = SteeringBehaviours.Arrive(transform, player.position, 5f);
-                break;
-
-            case State.Attack:
-                Attack();
-                dir = Vector3.zero;
-                break;
-
-            case State.Pursue:
-                dir = SteeringBehaviours.Pursue(transform, player, playerRb, maxPredictionTime, slowRadious);
-                break;
-
-            case State.Wimpod_Tower:
-                TowerRotation();
-                pkmnRb.linearVelocity = Vector3.zero;
-                break;
-
-            case State.Wimpod_Lake:
-                isFleeing = true;
-                dir = SteeringBehaviours.Seek(transform, lakeTarget.position);
-                break;
-
-            case State.Wander:
-                wanderTimer -= Time.deltaTime;
-                if (wanderTimer <= 0f)
-                {
-                    wanderDirection = SteeringBehaviours.Wander(wanderDirection, 180f);
-                    wanderTimer = wanderChangeInterval;
-                }
-                dir = wanderDirection;
-                break;
-
             case State.Sandygast_Idle:
                 pkmnRb.linearVelocity = new Vector3(0, pkmnRb.linearVelocity.y, 0);
                 EmergFromSand();
@@ -206,7 +154,7 @@ public class PKMNController : MonoBehaviour
 
             case State.Sandygast_Moving:
                 dir = SteeringBehaviours.FollowPath(transform, currentPathPoints, ref currentPathIndex, sandygastNodeDistanceThreshold);
-                if (dir == Vector3.zero && currentPathIndex >=  currentPathPoints.Count)
+                if (dir == Vector3.zero && currentPathIndex >= currentPathPoints.Count)
                 {
                     waitTimer = surfaceWaitTime;
                     SetState(State.Sandygast_Idle);
@@ -222,19 +170,13 @@ public class PKMNController : MonoBehaviour
                 if (dir == Vector3.zero && thetaPathIndex >= thetaPathPoints.Count)
                     SetState(State.Gimmighoul_SearchCoin);
                 break;
-
-            case State.Heal:
-                Heal();
-                dir = Vector3.zero;
-                break;
-
         }
         Move(dir);
     }
 
     private void Move(Vector3 dir)
     {
-        
+
         Vector3 hSpeed = dir * speed;
         float currentVSpeed = pkmnRb.linearVelocity.y;
 
@@ -262,79 +204,12 @@ public class PKMNController : MonoBehaviour
     public void OnCaptured()
     {
         audioSource.PlayOneShot(captureSound);
-        SetState(State.Captured);        
+        SetState(State.Captured);
 
         pkmnRb.linearVelocity = Vector3.zero;
         pkmnRb.isKinematic = true;
 
         gameObject.SetActive(false);
-    }
-
-    private void Attack()
-    {
-        Vector3 lookDir = (player.position - transform.position).normalized;
-        lookDir.y = 0;
-        transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(lookDir), Time.deltaTime * rotationSpeed);
-
-        if (Time.time >= lastAttackTime + attackCooldown)
-        {
-            Instantiate(hammerPrefab, attackPoint.position, transform.rotation);
-            lastAttackTime = Time.time;
-        }
-    }
-
-    private void Heal()
-    {
-        Vector3 lookDir = (player.position - transform.position).normalized;
-        lookDir.y = 0;
-        transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(lookDir), Time.deltaTime * rotationSpeed);
-
-        if (Time.time >= lastHealTime + healCooldown)
-        {
-            Instantiate(potionPrefab, healPoint.position, transform.rotation);
-            lastHealTime = Time.time;
-        }
-    }
-
-    private void TowerRotation()
-    {
-        if (Time.time >= nextRotationTime)
-        {
-            targetYaw += 90f;
-            nextRotationTime = Time.time + rotationInterval;
-        }
-
-        Quaternion targetRot = Quaternion.Euler(0, targetYaw, 0);
-        transform.rotation = Quaternion.Lerp(transform.rotation, targetRot, Time.deltaTime * rotationSpeed);
-    }
-
-    private void OnTriggerEnter(Collider other)
-    {
-        if (other.CompareTag("Water") && personality == Personality.Wimpod)
-        {
-            StartCoroutine(RespawnRoutine());
-        }
-    }
-
-    private System.Collections.IEnumerator RespawnRoutine()
-    {
-        WimpodVisible(false);
-        state = State.Captured;
-
-        yield return new WaitForSeconds(respawnTime);
-
-        transform.position = initialPos.position;
-        targetYaw = 0;
-        isFleeing = false;
-
-        WimpodVisible(true);
-        state = State.Wimpod_Tower;
-    }
-
-    private void WimpodVisible(bool visible)
-    {
-        Renderer[] renders = GetComponentsInChildren<Renderer>();
-        foreach (Renderer r in renders) r.enabled = visible;
     }
 
 
@@ -360,12 +235,16 @@ public class PKMNController : MonoBehaviour
         else
             targetNode = circuitNodes[0];
 
-        List<Node> path = AStar.Run(
+        List<Node> path = ThetaStar.Run(
             startNode,
             node => node == targetNode,
             node => node.neighbours,
             (n1, n2) => Vector3.Distance(n1.transform.position, n2.transform.position),
-            node => Vector3.Distance(node.transform.position, targetNode.transform.position)
+            node => Vector3.Distance(node.transform.position, targetNode.transform.position),
+            (n1, n2) => {
+                Vector3 dir = n2.transform.position - n1.transform.position;
+                return !Physics.Raycast(n1.transform.position + Vector3.up * 0.2f, dir.normalized, dir.magnitude, wallLayerMask);
+            }
         );
 
         if (path != null && path.Count > 0)
@@ -383,7 +262,7 @@ public class PKMNController : MonoBehaviour
             SetState(State.Sandygast_Moving);
         }
     }
-    
+
     private void EmergFromSand()
     {
         if (sandygastBodyMesh != null)
@@ -415,16 +294,12 @@ public class PKMNController : MonoBehaviour
 
         if (startNode == null || targetNode == null) return;
 
-        List<Node> path = ThetaStar.Run(
+        List<Node> path = AStar.Run(
             startNode,
             node => node == targetNode,
             node => node.neighbours,
             (n1, n2) => Vector3.Distance(n1.transform.position, n2.transform.position),
-            node => Vector3.Distance(node.transform.position, targetNode.transform.position),
-            (n1, n2) => {
-                Vector3 dir = n2.transform.position - n1.transform.position;
-                return !Physics.Raycast(n1.transform.position + Vector3.up * 0.2f, dir.normalized, dir.magnitude, wallLayerMask);
-            }
+            node => Vector3.Distance(node.transform.position, targetNode.transform.position)
         );
 
         if (path != null && path.Count > 0)

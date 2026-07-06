@@ -65,4 +65,15 @@ public class PKMNDecisionTree : MonoBehaviour
             move, search
         );
     }
+
+    public static Node_Decision CreateMimikyuTree(float healRange)
+    {
+        Node_Action heal = new Node_Action(pkmn => pkmn.SetState(PKMNController.State.Heal));
+        Node_Action pursue = new Node_Action(pkmn => pkmn.SetState(PKMNController.State.Pursue));
+        Node_Action wander = new Node_Action(pkmn => pkmn.SetState(PKMNController.State.Wander));
+
+        Node_Question distCheck = new Node_Question(ctx => Vector3.Distance(ctx.self.position, ctx.player.position) <= healRange, heal, pursue);
+
+        return new Node_Question(ctx => ctx.los.LOS(ctx.self, ctx.player), distCheck, wander);
+    }
 }
